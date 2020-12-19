@@ -43,15 +43,16 @@ $ bypass403 -h
 | |__  _   _ _ __   __ _ ___ ___| || |  / _ \___ /
 | '_ \| | | | '_ \ / _` / __/ __| || |_| | | ||_ \
 | |_) | |_| | |_) | (_| \__ \__ \__   _| |_| |__) |
-|_.__/ \__, | .__/ \__,_|___/___/  |_|  \___/____/ v1.0.0
+|_.__/ \__, | .__/ \__,_|___/___/  |_|  \___/____/ v1.2.0
        |___/|_|
 
 USAGE:
   bypass403 [OPTIONS]
 
 OPTIONS:
-  -hosts          hosts 403 to bypass (use `-` to read stdin)
-  -paths          paths 403 to bypass (use `-` to read stdin)
+  -c               concurrency level (default: 20)
+  -delay           delay between requests (ms) (default: 100)
+  -urls            urls with 403 to bypass (use `-` to read stdin)
 ```
 
 ## Contribution
