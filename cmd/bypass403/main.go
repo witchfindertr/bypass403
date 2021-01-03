@@ -40,7 +40,7 @@ func banner() {
 func init() {
 	flag.IntVar(&o.concurrency, "c", 20, "")
 	flag.IntVar(&o.delay, "delay", 100, "")
-	flag.StringVar(&o.URLs, "urls", "", "")
+	flag.StringVar(&o.URLs, "iL", "", "")
 
 	flag.Usage = func() {
 		banner()
@@ -49,9 +49,10 @@ func init() {
 		h += "  bypass403 [OPTIONS]\n"
 
 		h += "\nOPTIONS:\n"
-		h += "  -c               concurrency level (default: 20)\n"
-		h += "  -delay           delay between requests (ms) (default: 100)\n"
-		h += "  -urls            urls with 403 to bypass (use `-` to read stdin)\n"
+		h += "  -c         concurrency level (default: 20)\n"
+		h += "  -delay     delay between requests (ms) (default: 100)\n"
+		h += "  -iL        urls with 403 to bypass (use `iL -` to read from stdin)\n"
+		h += "\n"
 
 		fmt.Fprintf(os.Stderr, h)
 	}
