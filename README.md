@@ -31,9 +31,10 @@ USAGE:
   bypass403 [OPTIONS]
 
 OPTIONS:
-  -c               concurrency level (default: 20)
-  -delay           delay between requests (ms) (default: 100)
-  -urls            urls with 403 to bypass (use `-` to read stdin)
+  -c         concurrency level (default: 20)
+  -delay     delay between requests (ms) (default: 100)
+  -iL        urls with 403 to bypass (use `iL -` to read from stdin)
+  -nC        no color mode
 ```
 
 ## Installation
