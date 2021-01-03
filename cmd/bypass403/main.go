@@ -6,7 +6,9 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -19,11 +21,13 @@ import (
 type options struct {
 	concurrency int
 	delay       int
+	noColor     bool
 	URLs        string
 }
 
 var (
-	o options
+	o  options
+	au aurora.Aurora
 )
 
 func banner() {
@@ -40,6 +44,7 @@ func banner() {
 func init() {
 	flag.IntVar(&o.concurrency, "c", 20, "")
 	flag.IntVar(&o.delay, "delay", 100, "")
+	flag.BoolVar(&o.noColor, "nC", false, "")
 	flag.StringVar(&o.URLs, "iL", "", "")
 
 	flag.Usage = func() {
@@ -52,12 +57,15 @@ func init() {
 		h += "  -c         concurrency level (default: 20)\n"
 		h += "  -delay     delay between requests (ms) (default: 100)\n"
 		h += "  -iL        urls with 403 to bypass (use `iL -` to read from stdin)\n"
+		h += "  -nC        no color mode\n"
 		h += "\n"
 
 		fmt.Fprintf(os.Stderr, h)
 	}
 
 	flag.Parse()
+
+	au = aurora.NewAurora(!o.noColor)
 }
 
 func main() {
@@ -188,7 +196,8 @@ func main() {
 						continue
 					}
 
-					fmt.Println("[", res.StatusCode(), "]", bypass)
+					// fmt.Println("[", res.StatusCode(), "]", bypass)
+					fmt.Println("[", coloredStatus(res.StatusCode(), au), "]", bypass)
 				}
 
 				for j := 0; j < len(headers); j++ {
@@ -207,11 +216,29 @@ func main() {
 						continue
 					}
 
-					fmt.Println("[", res.StatusCode(), "]", parsedURL.String(), "-H", headers[j][0]+":", headers[j][1])
+					// fmt.Println("[", res.StatusCode(), "]", parsedURL.String(), "-H", headers[j][0]+":", headers[j][1])
+					fmt.Println("[", coloredStatus(res.StatusCode(), au), "]", parsedURL.String(), "-H", headers[j][0]+":", headers[j][1])
 				}
 			}
 		}()
 	}
 
 	wg.Wait()
+}
+
+func coloredStatus(code int, au aurora.Aurora) aurora.Value {
+	var coloredStatusCode aurora.Value
+
+	switch {
+	case code >= http.StatusOK && code < http.StatusMultipleChoices:
+		coloredStatusCode = au.BrightGreen(strconv.Itoa(code)).Bold()
+	case code >= http.StatusMultipleChoices && code < http.StatusBadRequest:
+		coloredStatusCode = au.BrightYellow(strconv.Itoa(code)).Bold()
+	case code >= http.StatusBadRequest && code < http.StatusInternalServerError:
+		coloredStatusCode = au.BrightRed(strconv.Itoa(code)).Bold()
+	case code > http.StatusInternalServerError:
+		coloredStatusCode = au.Bold(aurora.Yellow(strconv.Itoa(code)))
+	}
+
+	return coloredStatusCode
 }
